@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VGM外汇交易平台 - 运营管理系统</title>
+<style>
+:root {
+  --primary: #0f766e; --primary-dark: #115e59; --success: #059669; --danger: #dc2626;
+  --warning: #d97706; --sidebar-bg: #0f172a; --sidebar-hover: #1e293b;
+  --sidebar-active: #020617; --bg: #f8fafc; --card: #ffffff; --border: #e2e8f0;
+  --text: #1e293b; --text-secondary: #64748b; --text-light: #94a3b8;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); display: flex; height: 100vh; }
+.sidebar { width: 260px; min-width: 260px; background: var(--sidebar-bg); color: #e2e8f0; display: flex; flex-direction: column; overflow-y: auto; }
+.sidebar-header { padding: 20px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.sidebar-header h1 { font-size: 17px; font-weight: 700; color: #fff; }
+.sidebar-header p { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+.sidebar-nav { flex: 1; padding: 8px 0; }
+.nav-section { margin-bottom: 4px; }
+.nav-section-title { padding: 12px 20px 6px; font-size: 11px; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: .5px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+.nav-section-title:hover { color: #94a3b8; }
+.nav-item { display: flex; align-items: center; padding: 9px 20px 9px 32px; cursor: pointer; font-size: 13px; transition: all .15s; border-left: 3px solid transparent; color: #94a3b8; }
+.nav-item:hover { background: var(--sidebar-hover); color: #e2e8f0; }
+.nav-item.active { background: var(--sidebar-active); border-left-color: var(--primary); color: #fff; font-weight: 500; }
+.nav-item .badge { margin-left: auto; background: var(--danger); color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 10px; }
+.nav-item .badge.info { background: var(--primary); }
+.sidebar-footer { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,.08); font-size: 12px; color: var(--text-light); }
+.sidebar-footer .user { color: #fff; font-weight: 500; }
+.main { flex: 1; overflow-y: auto; padding: 24px; }
+.page { display: none; }
+.page.active { display: block; }
+.page-header { margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; }
+.page-header h2 { font-size: 22px; font-weight: 700; }
+.page-header p { color: var(--text-secondary); font-size: 13px; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 16px; margin-bottom: 24px; }
+.stat-card { background: var(--card); border-radius: 12px; border: 1px solid var(--border); padding: 20px; }
+.stat-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
+.stat-value { font-size: 24px; font-weight: 700; }
+.stat-value.up { color: var(--success); }
+.stat-value.down { color: var(--danger); }
+.stat-change { font-size: 12px; margin-top: 2px; color: var(--text-secondary); }
+.card { background: var(--card); border-radius: 12px; border: 1px solid var(--border); padding: 20px; margin-bottom: 16px; }
+.card-header { font-size: 15px; font-weight: 600; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; text-transform: uppercase; }
+.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit; }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(15,118,110,.1); }
+.form-group input[readonly] { background: #f8fafc; color: var(--text-secondary); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.form-row-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; }
+.btn { padding: 9px 18px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all .15s; display: inline-flex; align-items: center; gap: 6px; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-success { background: var(--success); color: #fff; }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+.btn-outline:hover { background: var(--bg); }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn-lg { padding: 12px 24px; font-size: 15px; }
+.btn-group { display: flex; gap: 8px; margin-top: 16px; }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; }
+.tag-success { background: #dcfce7; color: #166534; }
+.tag-warning { background: #fef3c7; color: #92400e; }
+.tag-danger { background: #fee2e2; color: #991b1b; }
+.tag-info { background: #dbeafe; color: #1e40af; }
+.tag-primary { background: #ccfbf1; color: #134e4a; }
+.tag-default { background: #f1f5f9; color: #475569; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 11px 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 13px; }
+th { background: var(--bg); font-weight: 600; color: var(--text-secondary); font-size: 11px; text-transform: uppercase; letter-spacing: .5px; }
+tr:hover td { background: #f8fafc; }
+.alert { padding: 12px 16px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; display: flex; align-items: flex-start; gap: 8px; }
+.alert-info { background: #f0fdfa; border: 1px solid #99f6e4; color: #134e4a; }
+.alert-warning { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+.alert-danger { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+.alert-success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+.filter-bar { display: flex; gap: 12px; align-items: flex-end; margin-bottom: 16px; flex-wrap: wrap; }
+.filter-bar .form-group { margin-bottom: 0; min-width: 150px; }
+.filter-bar .form-group input, .filter-bar .form-group select { min-width: 150px; }
+.tab-nav { display: flex; border-bottom: 2px solid var(--border); margin-bottom: 16px; }
+.tab-nav .tab { padding: 10px 16px; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--text-secondary); border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all .15s; }
+.tab-nav .tab:hover { color: var(--text); }
+.tab-nav .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+.pagination { display: flex; gap: 8px; justify-content: center; margin-top: 16px; }
+.pagination button { padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--card); font-size: 13px; cursor: pointer; }
+.pagination button.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.empty-state { text-align: center; padding: 48px 20px; color: var(--text-secondary); }
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; }
+.info-grid .info-label { color: var(--text-secondary); font-size: 12px; }
+.info-grid .info-value { font-size: 14px; font-weight: 500; }
+.audit-log .log-time { color: var(--text-secondary); font-size: 12px; }
+.audit-log .log-user { font-weight: 600; }
+.status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+.status-dot.online { background: var(--success); }
+.status-dot.offline { background: var(--text-light); }
+.status-dot.warning { background: var(--warning); }
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-header"><h1>VGM 运营管理系统</h1><p>Admin Console v3.1.0</p></div>
+  <nav class="sidebar-nav">
+    <div class="nav-section"><div class="nav-section-title">概览</div>
+      <div class="nav-item active" data-page="admin-dashboard">📊 系统仪表盘</div>
+    </div>
+    <div class="nav-section"><div class="nav-section-title">CAMS 账户管理</div>
+      <div class="nav-item" data-page="admin-customers">🏢 企业客户管理</div>
+      <div class="nav-item" data-page="admin-onboarding">📋 开户审核 <span class="badge">5</span></div>
+      <div class="nav-item" data-page="admin-accounts">🔒 账户状态管理</div>
+      <div class="nav-item" data-page="admin-funds">💰 资金管理</div>
+      <div class="nav-item" data-page="admin-ib">🤝 IB/代理商管理</div>
+    </div>
+    <div class="nav-section"><div class="nav-section-title">产品配置</div>
+      <div class="nav-item" data-page="admin-ccy-pairs">💱 货币对管理</div>
+      <div class="nav-item" data-page="admin-products">⚙️ 交易产品配置</div>
+      <div class="nav-item" data-page="admin-tenors">📅 期限模板管理</div>
+      <div class="nav-item" data-page="admin-strategies">🧠 智选策略配置</div>
+      <div class="nav-item" data-page="admin-sessions">🕐 交易时段管理</div>
+    </div>
+    <div class="nav-section"><div class="nav-section-title">系统管理</div>
+      <div class="nav-item" data-page="admin-users">👤 后台用户管理</div>
+      <div class="nav-item" data-page="admin-roles">🔑 角色权限管理</div>
+      <div class="nav-item" data-page="admin-audit">📝 操作日志</div>
+      <div class="nav-item" data-page="admin-params">🔧 系统参数配置</div>
+      <div class="nav-item" data-page="admin-notify">📬 消息通知管理</div>
+    </div>
+    <div class="nav-section"><div class="nav-section-title">合规管理</div>
+      <div class="nav-item" data-page="admin-kyc">🛡️ KYC/AML管理</div>
+      <div class="nav-item" data-page="admin-reports">📄 交易报告</div>
+      <div class="nav-item" data-page="admin-regulatory">📊 监管报表</div>
+      <div class="nav-item" data-page="admin-auditlog">🔍 审计日志</div>
+    </div>
+    <div class="nav-section"><div class="nav-section-title">财务管理</div>
+      <div class="nav-item" data-page="admin-deposit">🏦 出入金管理</div>
+      <div class="nav-item" data-page="admin-fees">💳 手续费管理</div>
+      <div class="nav-item" data-page="admin-settlement">📑 结算管理</div>
+      <div class="nav-item" data-page="admin-reconciliation">🔗 对账管理</div>
+      <div class="nav-item" data-page="admin-financial">📈 财务报表</div>
+    </div>
+    <div class="nav-section"><div class="nav-section-title">配置管理</div>
+      <div class="nav-item" data-page="admin-quiz">📝 问卷管理</div>
+      <div class="nav-item" data-page="admin-holidays">🏖️ 假期管理</div>
+    </div>
+  </nav>
+  <div class="sidebar-footer"><div class="user">Admin · 超级管理员</div><div>最后登录: 2026-05-28 14:30</div></div>
+</aside>
+
+<main class="main" id="main-content">
+
+<!-- ===== 系统仪表盘 ===== -->
+<div class="page active" id="page-admin-dashboard">
+  <div class="page-header"><div><h2>系统仪表盘</h2><p>平台运营全景</p></div><span style="font-size:12px;color:var(--text-secondary)">数据更新: 实时</span></div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">活跃客户数</div><div class="stat-value">128</div><div class="stat-change">本月新增 +12</div></div>
+    <div class="stat-card"><div class="stat-label">今日交易量</div><div class="stat-value">$ 48.5M</div><div class="stat-change">笔数: 186</div></div>
+    <div class="stat-card"><div class="stat-label">平台浮盈</div><div class="stat-value up">$ 2.85M</div><div class="stat-change">MTD</div></div>
+    <div class="stat-card"><div class="stat-label">保证金使用率</div><div class="stat-value">38.2%</div><div class="stat-change">总额 $ 850M</div></div>
+    <div class="stat-card"><div class="stat-label">待审核开户</div><div class="stat-value" style="color:var(--warning)">5</div><div class="stat-change">需处理</div></div>
+    <div class="stat-card"><div class="stat-label">系统健康</div><div class="stat-value up">99.97%</div><div class="stat-change">30天正常运行</div></div>
+  </div>
+  <div class="card-grid">
+    <div class="card"><div class="card-header">今日交易量分布</div>
+      <table>
+        <tr><td>即远期</td><td>$ 32.5M</td><td style="text-align:right">67.0%</td></tr>
+        <tr><td>NDF</td><td>$ 8.2M</td><td style="text-align:right">16.9%</td></tr>
+        <tr><td>掉期</td><td>$ 5.1M</td><td style="text-align:right">10.5%</td></tr>
+        <tr><td>期权</td><td>$ 2.1M</td><td style="text-align:right">4.3%</td></tr>
+        <tr><td>挂单</td><td>$ 0.6M</td><td style="text-align:right">1.2%</td></tr>
+      </table>
+    </div>
+    <div class="card"><div class="card-header">最近告警</div>
+      <div class="alert alert-warning">客户 ABC Corp 保证金率降至 85%</div>
+      <div class="alert alert-info">LP "LiquidityX" 报价延迟 350ms</div>
+      <div class="alert alert-warning">USD/THB 净敞口接近限额 (92%)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 企业客户管理 ===== -->
+<div class="page" id="page-admin-customers">
+  <div class="page-header"><div><h2>企业客户管理</h2><p>CAMS · 客户全生命周期管理</p></div><button class="btn btn-primary">+ 新增客户</button></div>
+  <div class="filter-bar">
+    <div class="form-group"><input type="text" placeholder="企业名称 / 账户编号"></div>
+    <div class="form-group"><select><option>全部状态</option><option>正常</option><option>冻结</option><option>注销</option></select></div>
+    <div class="form-group"><select><option>全部行业</option><option>制造业</option><option>贸易</option><option>金融</option><option>科技</option></select></div>
+    <button class="btn btn-primary">搜索</button>
+  </div>
+  <div class="card">
+    <table>
+      <thead><tr><th>账户编号</th><th>企业名称</th><th>行业</th><th>风险等级</th><th>账户状态</th><th>保证金</th><th>开户日期</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr><td>C2024-00158</td><td>ABC Corporation Ltd</td><td>贸易</td><td><span class="tag tag-warning">进取型</span></td><td><span class="tag tag-success">正常</span></td><td>$ 4.0M</td><td>2024-03-15</td><td><button class="btn btn-sm btn-outline">详情</button> <button class="btn btn-sm btn-outline">编辑</button></td></tr>
+        <tr><td>C2024-00210</td><td>GlobalTrade HK</td><td>贸易</td><td><span class="tag tag-warning">平衡型</span></td><td><span class="tag tag-success">正常</span></td><td>$ 1.2M</td><td>2024-06-20</td><td><button class="btn btn-sm btn-outline">详情</button> <button class="btn btn-sm btn-outline">编辑</button></td></tr>
+        <tr><td>C2025-00345</td><td>TechFin Asia</td><td>科技</td><td><span class="tag tag-danger">激进型</span></td><td><span class="tag tag-success">正常</span></td><td>$ 8.5M</td><td>2025-01-10</td><td><button class="btn btn-sm btn-outline">详情</button> <button class="btn btn-sm btn-outline">编辑</button></td></tr>
+        <tr><td>C2025-00420</td><td>Pacific Imports</td><td>制造业</td><td><span class="tag tag-default">保守型</span></td><td><span class="tag tag-warning">冻结</span></td><td>$ 500K</td><td>2025-08-05</td><td><button class="btn btn-sm btn-outline">详情</button> <button class="btn btn-sm btn-success">解冻</button></td></tr>
+      </tbody>
+    </table>
+    <div class="pagination"><button class="active">1</button><button>2</button><button>3</button><button>→</button></div>
+  </div>
+</div>
+
+<!-- ===== 开户审核 ===== -->
+<div class="page" id="page-admin-onboarding">
+  <div class="page-header"><div><h2>开户审核</h2><p>KYC/AML审查 · 初审→复审→开户确认</p></div></div>
+  <div class="tab-nav">
+    <div class="tab active">待初审 (5)</div><div class="tab">待复审 (2)</div><div class="tab">已审核</div>
+  </div>
+  <div class="card">
+    <table>
+      <thead><tr><th>申请编号</th><th>企业名称</th><th>注册地</th><th>申请日期</th><th>KYC状态</th><th>AML筛查</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr><td>APP202605001</td><td>Sunrise Trading Ltd</td><td>中国香港</td><td>2026-05-25</td><td><span class="tag tag-warning">待审核</span></td><td><span class="tag tag-success">通过</span></td><td><button class="btn btn-sm btn-success">通过</button> <button class="btn btn-sm btn-danger">拒绝</button></td></tr>
+        <tr><td>APP202605002</td><td>OceanBridge Capital</td><td>新加坡</td><td>2026-05-26</td><td><span class="tag tag-warning">待审核</span></td><td><span class="tag tag-success">通过</span></td><td><button class="btn btn-sm btn-success">通过</button> <button class="btn btn-sm btn-danger">拒绝</button></td></tr>
+        <tr><td>APP202605003</td><td>Delta Industries</td><td>中国内地</td><td>2026-05-27</td><td><span class="tag tag-warning">待审核</span></td><td><span class="tag tag-danger">命中名单</span></td><td><button class="btn btn-sm btn-outline">详情</button> <button class="btn btn-sm btn-danger">拒绝</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 账户状态管理 ===== -->
+<div class="page" id="page-admin-accounts">
+  <div class="page-header"><h2>账户状态管理</h2></div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">正常账户</div><div class="stat-value">115</div></div>
+    <div class="stat-card"><div class="stat-label">冻结/限制</div><div class="stat-value" style="color:var(--warning)">8</div></div>
+    <div class="stat-card"><div class="stat-label">待审核</div><div class="stat-value">5</div></div>
+    <div class="stat-card"><div class="stat-label">已注销</div><div class="stat-value">12</div></div>
+  </div>
+  <div class="card">
+    <table>
+      <thead><tr><th>账户</th><th>企业名称</th><th>当前状态</th><th>保证金率</th><th>最后交易</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr><td>C2024-00158</td><td>ABC Corporation Ltd</td><td><span class="tag tag-success">正常</span></td><td>71.3%</td><td>2026-05-28</td><td><button class="btn btn-sm btn-outline">冻结</button> <button class="btn btn-sm btn-outline">限制</button></td></tr>
+        <tr><td>C2025-00420</td><td>Pacific Imports</td><td><span class="tag tag-warning">冻结</span></td><td>—</td><td>2026-05-15</td><td><button class="btn btn-sm btn-success">解冻</button> <button class="btn btn-sm btn-danger">注销</button></td></tr>
+        <tr style="background:#fef2f2"><td>C2024-00550</td><td>Eastern Trade Co</td><td><span class="tag tag-danger">强平中</span></td><td>45.2%</td><td>2026-05-28</td><td><button class="btn btn-sm btn-danger">强制平仓</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 资金管理(后台) ===== -->
+<div class="page" id="page-admin-funds">
+  <div class="page-header"><h2>资金管理</h2></div>
+  <div class="card">
+    <div class="card-header">客户资金概览</div>
+    <table>
+      <thead><tr><th>客户</th><th>总余额</th><th>可用余额</th><th>冻结金额</th><th>已用保证金</th><th>保证金率</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr><td>ABC Corporation Ltd</td><td>$ 4,000,000</td><td>$ 2,850,000</td><td>$ 0</td><td>$ 1,150,000</td><td>71.3%</td><td><button class="btn btn-sm btn-outline">资金调整</button></td></tr>
+        <tr><td>TechFin Asia</td><td>$ 8,500,000</td><td>$ 5,200,000</td><td>$ 500,000</td><td>$ 2,800,000</td><td>54.1%</td><td><button class="btn btn-sm btn-outline">资金调整</button></td></tr>
+        <tr style="background:#fffbeb"><td>GlobalTrade HK</td><td>$ 1,200,000</td><td>$ 800,000</td><td>$ 100,000</td><td>$ 300,000</td><td style="color:var(--warning)">88.9%</td><td><button class="btn btn-sm btn-warning">追保通知</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== IB/代理商管理 ===== -->
+<div class="page" id="page-admin-ib">
+  <div class="page-header"><div><h2>IB/代理商管理</h2><p>介绍经纪人 · 佣金结算 · 业绩统计</p></div><button class="btn btn-primary">+ 新增IB</button></div>
+  <div class="card">
+    <table>
+      <thead><tr><th>IB编号</th><th>名称</th><th>级别</th><th>名下客户</th><th>月交易量</th><th>佣金比例</th><th>当月佣金</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr><td>IB001</td><td>Alpha Partners</td><td>一级</td><td>15</td><td>$ 12.5M</td><td>0.35%</td><td>$ 43,750</td><td><button class="btn btn-sm btn-outline">详情</button> <button class="btn btn-sm btn-primary">结算</button></td></tr>
+        <tr><td>IB002</td><td>Beta Consulting</td><td>二级</td><td>8</td><td>$ 5.2M</td><td>0.25%</td><td>$ 13,000</td><td><button class="btn btn-sm btn-outline">详情</button> <button class="btn btn-sm btn-primary">结算</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 货币对管理 ===== -->
+<div class="page" id="page-admin-ccy-pairs">
+  <div class="page-header"><div><h2>货币对管理</h2></div><button class="btn btn-primary">+ 新增货币对</button></div>
+  <div class="card">
+    <table>
+      <thead><tr><th>货币对</th><th>基础货币</th><th>报价货币</th><th>报价精度</th><th>最小交易</th><th>最大交易</th><th>默认杠杆</th><th>状态</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr><td>USD/HKD</td><td>USD</td><td>HKD</td><td>4位</td><td>$ 10,000</td><td>$ 10,000,000</td><td>20x</td><td><span class="tag tag-success">启用</span></td><td><button class="btn btn-sm btn-outline">编辑</button> <button class="btn btn-sm btn-danger">停用</button></td></tr>
+        <tr><td>USD/CNH</td><td>USD</td><td>CNH</td><td>4位</td><td>$ 10,000</td><td>$ 5,000,000</td><td>10x</td><td><span class="tag tag-success">启用</span></td><td><button class="btn btn-sm btn-outline">编辑</button> <button class="btn btn-sm btn-danger">停用</button></td></tr>
+        <tr><td>EUR/USD</td><td>EUR</td><td>USD</td><td>5位</td><td>€ 10,000</td><td>€ 20,000,000</td><td>30x</td><td><span class="tag tag-success">启用</span></td><td><button class="btn btn-sm btn-outline">编辑</button> <button class="btn btn-sm btn-danger">停用</button></td></tr>
+        <tr><td>USD/JPY</td><td>USD</td><td>JPY</td><td>3位</td><td>$ 10,000</td><td>$ 10,000,000</td><td>20x</td><td><span class="tag tag-success">启用</span></td><td><button class="btn btn-sm btn-outline">编辑</button> <button class="btn btn-sm btn-danger">停用</button></td></tr>
+        <tr><td>USD/MXN</td><td>USD</td><td>MXN</td><td>4位</td><td>$ 50,000</td><td>$ 2,000,000</td><td>10x</td><td><span class="tag tag-default">停用</span></td><td><button class="btn btn-sm btn-outline">编辑</button> <button class="btn btn-sm btn-success">启用</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 交易产品配置 ===== -->
+<div class="page" id="page-admin-products">
+  <div class="page-header"><h2>交易产品配置</h2></div>
+  <div class="tab-nav">
+    <div class="tab active">即远期</div><div class="tab">NDF</div><div class="tab">掉期</div><div class="tab">期权</div><div class="tab">挂单</div>
+  </div>
+  <div class="card">
+    <div class="card-header">即远期交易参数</div>
+    <div class="form-row-3">
+      <div class="form-group"><label>报价超时时间(秒)</label><input type="number" value="14"></div>
+      <div class="form-group"><label>最小交易金额</label><input type="number" value="10000"></div>
+      <div class="form-group"><label>单笔最大交易金额</label><input type="number" value="10000000"></div>
+    </div>
+    <div class="form-group"><label>可选交割期限</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+        <label style="font-size:13px"><input type="checkbox" checked> TOD</label>
+        <label style="font-size:13px"><input type="checkbox" checked> TOM</label>
+        <label style="font-size:13px"><input type="checkbox" checked> 1W</label>
+        <label style="font-size:13px"><input type="checkbox" checked> 2W</label>
+        <label style="font-size:13px"><input type="checkbox" checked> 3W</label>
+        <label style="font-size:13px"><input type="checkbox" checked> 1M</label>
+        <label style="font-size:13px"><input type="checkbox" checked> 2M</label>
+        <label style="font-size:13px"><input type="checkbox" checked> 3M</label>
+        <label style="font-size:13px"><input type="checkbox" checked> 6M</label>
+        <label style="font-size:13px"><input type="checkbox" checked> 1Y</label>
+        <label style="font-size:13px"><input type="checkbox" checked> 2Y</label>
+      </div>
+    </div>
+    <div class="form-group"><label>保证金规则</label><select><option>按货币对配置的保证金比率</option><option>固定比率</option></select></div>
+    <button class="btn btn-primary">保存配置</button>
+  </div>
+</div>
+
+<!-- ===== 期限模板管理 ===== -->
+<div class="page" id="page-admin-tenors">
+  <div class="page-header"><h2>期限模板管理</h2></div>
+  <div class="card">
+    <table>
+      <thead><tr><th>期限代码</th><th>名称</th><th>计算方式</th><th>天数</th><th>排除假期</th><th>状态</th></tr></thead>
+      <tbody>
+        <tr><td>TOD</td><td>当日</td><td>交易日</td><td>0</td><td>—</td><td><span class="tag tag-success">启用</span></td></tr>
+        <tr><td>TOM</td><td>次日</td><td>工作日+1</td><td>1</td><td>✅</td><td><span class="tag tag-success">启用</span></td></tr>
+        <tr><td>1W</td><td>1周</td><td>日历周</td><td>7</td><td>✅</td><td><span class="tag tag-success">启用</span></td></tr>
+        <tr><td>1M</td><td>1个月</td><td>日历月</td><td>—</td><td>✅</td><td><span class="tag tag-success">启用</span></td></tr>
+        <tr><td>3M</td><td>3个月</td><td>日历月</td><td>—</td><td>✅</td><td><span class="tag tag-success">启用</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 智选策略配置 ===== -->
+<div class="page" id="page-admin-strategies">
+  <div class="page-header"><div><h2>智选策略配置</h2></div><button class="btn btn-primary">+ 新增策略</button></div>
+  <div class="card">
+    <table>
+      <thead><tr><th>策略名称</th><th>货币对</th><th>期权类型</th><th>方向</th><th>执行价格规则</th><th>状态</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr><td>美元港币期权</td><td>USD/HKD</td><td>Put</td><td>卖出</td><td>即期价±0.0050 分5档</td><td><span class="tag tag-success">已上架</span></td><td><button class="btn btn-sm btn-outline">编辑</button> <button class="btn btn-sm btn-danger">下架</button></td></tr>
+        <tr><td>欧元美元区间</td><td>EUR/USD</td><td>Call</td><td>买入</td><td>ATMF±0.0020</td><td><span class="tag tag-default">草稿</span></td><td><button class="btn btn-sm btn-outline">编辑</button> <button class="btn btn-sm btn-success">上架</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 交易时段管理 ===== -->
+<div class="page" id="page-admin-sessions">
+  <div class="page-header"><h2>交易时段管理</h2></div>
+  <div class="alert alert-info">全局默认: 周一06:00 UTC ~ 周六05:00 UTC</div>
+  <div class="card">
+    <div class="card-header">货币对独立时段覆盖</div>
+    <table>
+      <thead><tr><th>货币对</th><th>交易开始</th><th>交易结束</th><th>覆盖全局?</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr><td>USD/CNH</td><td>周一 09:00 CST</td><td>周六 05:00 CST</td><td>✅ 是</td><td><button class="btn btn-sm btn-outline">编辑</button></td></tr>
+        <tr><td>USD/CNY</td><td>周一 09:30 CST</td><td>周五 16:30 CST</td><td>✅ 是</td><td><button class="btn btn-sm btn-outline">编辑</button></td></tr>
+        <tr><td>USD/THB</td><td>周一 08:30 ICT</td><td>周五 16:00 ICT</td><td>✅ 是</td><td><button class="btn btn-sm btn-outline">编辑</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-header">维护窗口 & 紧急操作</div>
+    <div class="form-row">
+      <div class="form-group"><label>日常维护窗口</label><input type="text" value="每日 04:00-04:30 UTC"></div>
+      <div class="form-group"><label>紧急操作</label><button class="btn btn-danger">🛑 紧急停市</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 后台用户管理 ===== -->
+<div class="page" id="page-admin-users">
+  <div class="page-header"><div><h2>后台用户管理</h2></div><button class="btn btn-primary">+ 新增用户</button></div>
+  <div class="card">
+    <table>
+      <thead><tr><th>用户名</th><th>姓名</th><th>角色</th><th>邮箱</th><th>最后登录</th><th>状态</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr><td>admin</td><td>System Admin</td><td><span class="tag tag-danger">超级管理员</span></td><td>admin@vgm.com</td><td>2026-05-28 14:30</td><td><span class="tag tag-success">启用</span></td><td><button class="btn btn-sm btn-outline">编辑</button></td></tr>
+        <tr><td>trader_mgr</td><td>Chen Li</td><td><span class="tag tag-info">交易管理员</span></td><td>cl@vgm.com</td><td>2026-05-28 10:15</td><td><span class="tag tag-success">启用</span></td><td><button class="btn btn-sm btn-outline">编辑</button> <button class="btn btn-sm btn-danger">禁用</button></td></tr>
+        <tr><td>risk_mgr</td><td>Liu Yang</td><td><span class="tag tag-warning">风控管理员</span></td><td>ly@vgm.com</td><td>2026-05-28 12:00</td><td><span class="tag tag-success">启用</span></td><td><button class="btn btn-sm btn-outline">编辑</button> <button class="btn btn-sm btn-danger">禁用</button></td></tr>
+        <tr><td>compliance</td><td>Zhang Hui</td><td><span class="tag tag-primary">合规管理员</span></td><td>zh@vgm.com</td><td>2026-05-27 17:30</td><td><span class="tag tag-success">启用</span></td><td><button class="btn btn-sm btn-outline">编辑</button> <button class="btn btn-sm btn-danger">禁用</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 角色权限管理 ===== -->
+<div class="page" id="page-admin-roles">
+  <div class="page-header"><div><h2>角色权限管理</h2></div><button class="btn btn-primary">+ 新增角色</button></div>
+  <div class="card">
+    <table>
+      <thead><tr><th>角色名称</th><th>权限范围</th><th>用户数</th><th>数据范围</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr><td>超级管理员</td><td>全部权限</td><td>1</td><td>全部数据</td><td><button class="btn btn-sm btn-outline">权限配置</button></td></tr>
+        <tr><td>交易管理员</td><td>DS交易管控</td><td>3</td><td>全部客户</td><td><button class="btn btn-sm btn-outline">权限配置</button></td></tr>
+        <tr><td>风控管理员</td><td>RMS风控管理</td><td>2</td><td>全部客户</td><td><button class="btn btn-sm btn-outline">权限配置</button></td></tr>
+        <tr><td>客户管理员</td><td>CAMS账户管理</td><td>4</td><td>本部门</td><td><button class="btn btn-sm btn-outline">权限配置</button></td></tr>
+        <tr><td>合规管理员</td><td>合规/审计</td><td>2</td><td>全部数据</td><td><button class="btn btn-sm btn-outline">权限配置</button></td></tr>
+        <tr><td>财务管理员</td><td>出入金/结算/报表</td><td>3</td><td>全部客户</td><td><button class="btn btn-sm btn-outline">权限配置</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 操作日志 ===== -->
+<div class="page" id="page-admin-audit">
+  <div class="page-header"><h2>操作日志</h2></div>
+  <div class="filter-bar">
+    <div class="form-group"><input type="text" placeholder="操作人"></div>
+    <div class="form-group"><select><option>全部模块</option><option>CAMS</option><option>产品配置</option><option>风控</option></select></div>
+    <div class="form-group"><select><option>全部类型</option><option>新增</option><option>修改</option><option>删除</option><option>审批</option></select></div>
+    <div class="form-group"><input type="date" value="2026-05-28"></div>
+    <button class="btn btn-primary">查询</button>
+  </div>
+  <div class="card">
+    <table>
+      <thead><tr><th>时间</th><th>操作人</th><th>模块</th><th>操作类型</th><th>操作内容</th><th>IP</th></tr></thead>
+      <tbody>
+        <tr><td>14:30:22</td><td>admin</td><td>系统</td><td>登录</td><td>管理员登录系统</td><td>10.0.1.100</td></tr>
+        <tr><td>14:15:08</td><td>trader_mgr</td><td>DS交易</td><td>审批</td><td>通过订单 FX20260528004</td><td>10.0.2.50</td></tr>
+        <tr><td>13:52:15</td><td>risk_mgr</td><td>RMS风控</td><td>修改</td><td>调整 USD/THB 净敞口限额至 $5M</td><td>10.0.2.51</td></tr>
+        <tr><td>11:30:00</td><td>compliance</td><td>合规</td><td>审核</td><td>KYC审核通过 APP202605001</td><td>10.0.3.10</td></tr>
+        <tr><td>09:15:45</td><td>finance_mgr</td><td>财务</td><td>执行</td><td>出金 $50,000 → ABC Corp</td><td>10.0.4.20</td></tr>
+      </tbody>
+    </table>
+    <div class="pagination"><button class="active">1</button><button>2</button><button>3</button><button>→</button></div>
+  </div>
+</div>
+
+<!-- ===== 系统参数配置 ===== -->
+<div class="page" id="page-admin-params">
+  <div class="page-header"><h2>系统参数配置</h2></div>
+  <div class="card">
+    <div class="card-header">报价参数</div>
+    <div class="form-row-3">
+      <div class="form-group"><label>报价超时时间(秒)</label><input type="number" value="14"></div>
+      <div class="form-group"><label>最大滑点(pips)</label><input type="number" value="5"></div>
+      <div class="form-group"><label>报价刷新频率(ms)</label><input type="number" value="100"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">保证金参数</div>
+    <div class="form-row-4">
+      <div class="form-group"><label>追保阈值</label><input type="number" value="100">%</div>
+      <div class="form-group"><label>预警阈值</label><input type="number" value="120">%</div>
+      <div class="form-group"><label>强平阈值</label><input type="number" value="80">%</div>
+      <div class="form-group"><label>观察阈值</label><input type="number" value="150">%</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">审批参数</div>
+    <div class="form-row-3">
+      <div class="form-group"><label>大额授权阈值</label><input type="number" value="1000000"></div>
+      <div class="form-group"><label>审批超时(小时)</label><input type="number" value="24"></div>
+      <div class="form-group"><label>是否启用复核流程</label><select><option selected>是</option><option>否</option></select></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">会话参数</div>
+    <div class="form-row">
+      <div class="form-group"><label>登录超时时间(分)</label><input type="number" value="30"></div>
+      <div class="form-group"><label>最大并发登录数</label><input type="number" value="3"></div>
+    </div>
+  </div>
+  <button class="btn btn-primary btn-lg">保存全部参数</button>
+</div>
+
+<!-- ===== 消息通知管理 ===== -->
+<div class="page" id="page-admin-notify">
+  <div class="page-header"><h2>消息通知管理</h2></div>
+  <div class="card">
+    <table>
+      <thead><tr><th>通知场景</th><th>接收人</th><th>站内信</th><th>邮件</th><th>短信</th><th>状态</th></tr></thead>
+      <tbody>
+        <tr><td>交易确认</td><td>交易客户</td><td>✅</td><td>✅</td><td>—</td><td><span class="tag tag-success">启用</span></td></tr>
+        <tr><td>审批通知</td><td>复核人/授权人</td><td>✅</td><td>✅</td><td>✅</td><td><span class="tag tag-success">启用</span></td></tr>
+        <tr><td>追加保证金</td><td>交易客户</td><td>✅</td><td>✅</td><td>✅</td><td><span class="tag tag-success">启用</span></td></tr>
+        <tr><td>强制平仓通知</td><td>交易客户</td><td>✅</td><td>✅</td><td>✅</td><td><span class="tag tag-success">启用</span></td></tr>
+        <tr><td>期权到期提醒</td><td>交易客户</td><td>✅</td><td>✅</td><td>—</td><td><span class="tag tag-success">启用</span></td></tr>
+        <tr><td>挂单成交/过期</td><td>交易客户</td><td>✅</td><td>✅</td><td>—</td><td><span class="tag tag-success">启用</span></td></tr>
+        <tr><td>风险评估过期</td><td>交易客户</td><td>✅</td><td>✅</td><td>—</td><td><span class="tag tag-success">启用</span></td></tr>
+        <tr><td>系统维护通知</td><td>全部客户</td><td>✅</td><td>✅</td><td>—</td><td><span class="tag tag-success">启用</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== KYC/AML ===== -->
+<div class="page" id="page-admin-kyc">
+  <div class="page-header"><h2>KYC/AML管理</h2></div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">KYC待审核</div><div class="stat-value" style="color:var(--warning)">7</div></div>
+    <div class="stat-card"><div class="stat-label">AML命中</div><div class="stat-value" style="color:var(--danger)">1</div></div>
+    <div class="stat-card"><div class="stat-label">EDD客户</div><div class="stat-value">3</div></div>
+    <div class="stat-card"><div class="stat-label">STR待上报</div><div class="stat-value" style="color:var(--warning)">2</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header">AML筛查名单</div>
+    <table>
+      <thead><tr><th>客户</th><th>命中名单</th><th>匹配度</th><th>处理状态</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr style="background:#fef2f2"><td>Delta Industries</td><td>OFAC SDN List</td><td>92%</td><td><span class="tag tag-danger">待处理</span></td><td><button class="btn btn-sm btn-outline">详情</button> <button class="btn btn-sm btn-danger">标记STR</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 交易报告 ===== -->
+<div class="page" id="page-admin-reports">
+  <div class="page-header"><h2>交易报告</h2></div>
+  <div class="card">
+    <table>
+      <thead><tr><th>报告类型</th><th>频率</th><th>上次生成</th><th>状态</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr><td>日交易汇总报告</td><td>每日</td><td>2026-05-28 00:05</td><td><span class="tag tag-success">已完成</span></td><td><button class="btn btn-sm btn-outline">查看</button> <button class="btn btn-sm btn-outline">下载</button></td></tr>
+        <tr><td>大额交易专项报告</td><td>每日</td><td>2026-05-28 00:10</td><td><span class="tag tag-success">已完成</span></td><td><button class="btn btn-sm btn-outline">查看</button> <button class="btn btn-sm btn-outline">下载</button></td></tr>
+        <tr><td>异常交易报告</td><td>实时</td><td>2026-05-28 14:30</td><td><span class="tag tag-warning">1条待审核</span></td><td><button class="btn btn-sm btn-outline">查看</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 监管报表 ===== -->
+<div class="page" id="page-admin-regulatory">
+  <div class="page-header"><h2>监管报表</h2></div>
+  <div class="card">
+    <table>
+      <thead><tr><th>报表名称</th><th>监管辖区</th><th>频率</th><th>下次报送</th><th>上次报送</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr><td>HKMA 交易报告</td><td>中国香港</td><td>每月</td><td>2026-06-05</td><td>2026-05-05</td><td><button class="btn btn-sm btn-outline">生成</button> <button class="btn btn-sm btn-outline">历史</button></td></tr>
+        <tr><td>SFC 大额报告</td><td>中国香港</td><td>实时</td><td>—</td><td>2026-05-27</td><td><button class="btn btn-sm btn-outline">查看</button></td></tr>
+        <tr><td>MAS 交易报告</td><td>新加坡</td><td>每月</td><td>2026-06-10</td><td>2026-05-10</td><td><button class="btn btn-sm btn-outline">生成</button> <button class="btn btn-sm btn-outline">历史</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 审计日志 ===== -->
+<div class="page" id="page-admin-auditlog">
+  <div class="page-header"><h2>审计日志</h2><p>保留≥7年 · 完整审计追踪</p></div>
+  <div class="filter-bar">
+    <div class="form-group"><input type="date" value="2026-05-01"> ~ <input type="date" value="2026-05-28" style="margin-top:4px"></div>
+    <div class="form-group"><input type="text" placeholder="关键词搜索"></div>
+    <button class="btn btn-primary">搜索</button> <button class="btn btn-outline">导出日志</button>
+  </div>
+  <div class="card">
+    <table>
+      <thead><tr><th>时间戳</th><th>用户</th><th>模块</th><th>操作</th><th>详情</th><th>结果</th></tr></thead>
+      <tbody>
+        <tr><td>2026-05-28 14:30:22.451</td><td>admin</td><td>认证</td><td>登录</td><td>IP: 10.0.1.100, Device: Chrome/120</td><td><span class="tag tag-success">成功</span></td></tr>
+        <tr><td>2026-05-28 14:15:08.123</td><td>trader_mgr</td><td>交易审批</td><td>授权</td><td>订单 FX20260528004, USD/CNH $1.2M</td><td><span class="tag tag-success">通过</span></td></tr>
+        <tr><td>2026-05-28 13:52:15.890</td><td>risk_mgr</td><td>风控规则</td><td>修改</td><td>USD/THB 净敞口限额改为 $5,000,000</td><td><span class="tag tag-success">成功</span></td></tr>
+        <tr><td>2026-05-28 11:30:00.234</td><td>compliance</td><td>KYC审核</td><td>通过</td><td>APP202605001 Sunrise Trading Ltd</td><td><span class="tag tag-success">通过</span></td></tr>
+        <tr><td>2026-05-28 09:15:45.678</td><td>finance_mgr</td><td>出金</td><td>执行</td><td>C2024-00158 ABC Corp $50,000</td><td><span class="tag tag-success">成功</span></td></tr>
+      </tbody>
+    </table>
+    <div class="pagination"><button class="active">1</button><button>2</button><button>3</button><button>→</button></div>
+  </div>
+</div>
+
+<!-- ===== 出入金管理 ===== -->
+<div class="page" id="page-admin-deposit">
+  <div class="page-header"><h2>出入金管理</h2></div>
+  <div class="tab-nav">
+    <div class="tab active">入金审核</div><div class="tab">出金审核</div><div class="tab">资金流水</div>
+  </div>
+  <div class="card">
+    <table>
+      <thead><tr><th>申请编号</th><th>客户</th><th>类型</th><th>金额</th><th>申请时间</th><th>状态</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr><td>DEP20260528001</td><td>ABC Corporation Ltd</td><td>入金</td><td>$ 200,000</td><td>09:30</td><td><span class="tag tag-warning">待确认</span></td><td><button class="btn btn-sm btn-success">确认到账</button> <button class="btn btn-sm btn-outline">查看</button></td></tr>
+        <tr><td>WTD20260528002</td><td>TechFin Asia</td><td>出金</td><td>$ 100,000</td><td>10:15</td><td><span class="tag tag-warning">待审核</span></td><td><button class="btn btn-sm btn-success">通过</button> <button class="btn btn-sm btn-danger">拒绝</button></td></tr>
+        <tr><td>DEP20260527005</td><td>GlobalTrade HK</td><td>入金</td><td>$ 500,000</td><td>昨 15:00</td><td><span class="tag tag-success">已到账</span></td><td><button class="btn btn-sm btn-outline">查看</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 手续费管理 ===== -->
+<div class="page" id="page-admin-fees">
+  <div class="page-header"><h2>手续费管理</h2></div>
+  <div class="card">
+    <table>
+      <thead><tr><th>产品类型</th><th>费率类型</th><th>默认费率</th><th>客户组差异化</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr><td>即远期</td><td>按金额比例</td><td>0.02%</td><td>VIP: 0.01%</td><td><button class="btn btn-sm btn-outline">编辑</button></td></tr>
+        <tr><td>NDF</td><td>按金额比例</td><td>0.03%</td><td>VIP: 0.02%</td><td><button class="btn btn-sm btn-outline">编辑</button></td></tr>
+        <tr><td>掉期</td><td>按名义本金</td><td>0.025%</td><td>—</td><td><button class="btn btn-sm btn-outline">编辑</button></td></tr>
+        <tr><td>期权</td><td>期权费%</td><td>5%</td><td>VIP: 3%</td><td><button class="btn btn-sm btn-outline">编辑</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 结算管理 ===== -->
+<div class="page" id="page-admin-settlement">
+  <div class="page-header"><h2>结算管理</h2></div>
+  <div class="card">
+    <table>
+      <thead><tr><th>交易编号</th><th>客户</th><th>类型</th><th>结算方式</th><th>金额</th><th>结算日</th><th>状态</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr><td>FX20260525001</td><td>ABC Corp</td><td>远期</td><td>实物交割</td><td>$ 1,000,000</td><td>2026-08-25</td><td><span class="tag tag-info">待结算</span></td><td><button class="btn btn-sm btn-outline">查看</button></td></tr>
+        <tr><td>OPT20260527001</td><td>ABC Corp</td><td>期权</td><td>差额结算</td><td>$ 100,000</td><td>2026-06-27</td><td><span class="tag tag-info">待结算</span></td><td><button class="btn btn-sm btn-outline">查看</button></td></tr>
+        <tr><td>NDF20260510001</td><td>TechFin</td><td>NDF</td><td>差额结算</td><td>$ 500,000</td><td>2026-06-10</td><td><span class="tag tag-info">待结算</span></td><td><button class="btn btn-sm btn-outline">差额计算</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 对账管理 ===== -->
+<div class="page" id="page-admin-reconciliation">
+  <div class="page-header"><h2>对账管理</h2></div>
+  <div class="card-grid">
+    <div class="card"><div class="card-header">内部对账</div>
+      <table><tr><td>CAMS vs RMS (保证金)</td><td><span class="tag tag-success">一致</span></td><td>2026-05-28 14:00</td></tr>
+      <tr><td>DS vs CAMS (交易记录)</td><td><span class="tag tag-success">一致</span></td><td>2026-05-28 14:00</td></tr>
+      <tr><td>期权引擎 vs RMS (Greeks)</td><td><span class="tag tag-success">一致</span></td><td>2026-05-28 14:00</td></tr></table>
+    </div>
+    <div class="card"><div class="card-header">外部对账</div>
+      <table><tr><td>银行 A (USD)</td><td><span class="tag tag-success">一致</span></td><td>08:30</td></tr>
+      <tr><td>银行 B (HKD)</td><td><span class="tag tag-success">一致</span></td><td>08:30</td></tr>
+      <tr><td>LP LiquidityX</td><td><span class="tag tag-warning">差异 $1,250</span></td><td>14:00</td></tr></table>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 财务报表 ===== -->
+<div class="page" id="page-admin-financial">
+  <div class="page-header"><h2>财务报表</h2></div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">本月收入</div><div class="stat-value up">$ 385,000</div></div>
+    <div class="stat-card"><div class="stat-label">点差收入</div><div class="stat-value">$ 210,000</div></div>
+    <div class="stat-card"><div class="stat-label">佣金收入</div><div class="stat-value">$ 95,000</div></div>
+    <div class="stat-card"><div class="stat-label">期权费收入</div><div class="stat-value">$ 80,000</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header">收入明细 (2026年5月)</div>
+    <table>
+      <thead><tr><th>收入类型</th><th>金额</th><th>占比</th><th>环比</th></tr></thead>
+      <tbody>
+        <tr><td>即远点差收入</td><td>$ 156,000</td><td>40.5%</td><td style="color:var(--success)">+8.2%</td></tr>
+        <tr><td>NDF点差收入</td><td>$ 54,000</td><td>14.0%</td><td style="color:var(--success)">+3.1%</td></tr>
+        <tr><td>掉期佣金</td><td>$ 42,000</td><td>10.9%</td><td style="color:var(--danger)">-2.5%</td></tr>
+        <tr><td>期权费收入</td><td>$ 80,000</td><td>20.8%</td><td style="color:var(--success)">+15.0%</td></tr>
+        <tr><td>IB返佣返还</td><td>-$ 56,750</td><td>—</td><td>—</td></tr>
+        <tr style="font-weight:600"><td>净收入</td><td>$ 328,250</td><td>—</td><td style="color:var(--success)">+6.8%</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 问卷管理 ===== -->
+<div class="page" id="page-admin-quiz">
+  <div class="page-header"><h2>问卷管理</h2></div>
+  <div class="tab-nav">
+    <div class="tab active">风险评估问卷</div><div class="tab">期权问卷</div><div class="tab">评估规则</div>
+  </div>
+  <div class="card">
+    <div class="card-header">风险评估 — 题目管理 <button class="btn btn-sm btn-primary">+ 新增题目</button></div>
+    <table>
+      <thead><tr><th>#</th><th>题目</th><th>类型</th><th>选项数</th><th>分值</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>贵公司的外汇交易经验年限？</td><td>单选</td><td>4</td><td>5分</td><td><button class="btn btn-sm btn-outline">编辑</button></td></tr>
+        <tr><td>2</td><td>贵公司可承受的最大单笔亏损比例？</td><td>单选</td><td>4</td><td>5分</td><td><button class="btn btn-sm btn-outline">编辑</button></td></tr>
+        <tr><td>3</td><td>贵公司是否有过衍生品交易经验？</td><td>单选</td><td>3</td><td>5分</td><td><button class="btn btn-sm btn-outline">编辑</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-header">风险等级评分映射</div>
+    <table>
+      <thead><tr><th>等级</th><th>分数区间</th><th>可交易产品</th></tr></thead>
+      <tbody>
+        <tr><td>谨慎型</td><td>0-20</td><td>即期交易</td></tr>
+        <tr><td>保守型</td><td>21-40</td><td>即期、短期远期</td></tr>
+        <tr><td>平衡型</td><td>41-60</td><td>即远期、NDF</td></tr>
+        <tr><td>进取型</td><td>61-80</td><td>即远期、NDF、掉期、挂单</td></tr>
+        <tr><td>激进型</td><td>81-100</td><td>全部产品（含期权）</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 假期管理 ===== -->
+<div class="page" id="page-admin-holidays">
+  <div class="page-header"><div><h2>假期管理</h2></div><button class="btn btn-primary">+ 新增假期</button> <button class="btn btn-outline">📥 批量导入</button></div>
+  <div class="card">
+    <div class="card-header">2026年假期日历</div>
+    <div class="form-row">
+      <div class="form-group"><label>国家/地区</label><select><option>全部</option><option>中国香港</option><option>中国内地</option><option>美国</option><option>英国</option></select></div>
+      <div class="form-group"><label>年份</label><select><option selected>2026</option><option>2027</option></select></div>
+    </div>
+    <button class="btn btn-primary" style="margin-bottom:12px">查询</button>
+    <table>
+      <thead><tr><th>日期</th><th>假期名称</th><th>国家/地区</th><th>类型</th><th>影响币种</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr><td>2026-07-01</td><td>香港特别行政区成立纪念日</td><td>中国香港</td><td>银行假期</td><td>HKD</td><td><button class="btn btn-sm btn-outline">编辑</button> <button class="btn btn-sm btn-danger">删除</button></td></tr>
+        <tr><td>2026-07-04</td><td>美国独立日</td><td>美国</td><td>公共假期</td><td>USD</td><td><button class="btn btn-sm btn-outline">编辑</button> <button class="btn btn-sm btn-danger">删除</button></td></tr>
+        <tr><td>2026-09-07</td><td>美国劳动节</td><td>美国</td><td>公共假期</td><td>USD</td><td><button class="btn btn-sm btn-outline">编辑</button> <button class="btn btn-sm btn-danger">删除</button></td></tr>
+        <tr><td>2026-10-01-03</td><td>中国国庆节</td><td>中国内地</td><td>公共假期</td><td>CNY/CNH</td><td><button class="btn btn-sm btn-outline">编辑</button> <button class="btn btn-sm btn-danger">删除</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-header">币种假期映射</div>
+    <table>
+      <thead><tr><th>币种</th><th>关联国家/地区</th><th>交割日规则</th></tr></thead>
+      <tbody>
+        <tr><td>USD</td><td>美国</td><td>遇假期顺延至下一工作日</td></tr>
+        <tr><td>HKD</td><td>中国香港</td><td>遇假期顺延至下一工作日</td></tr>
+        <tr><td>CNY/CNH</td><td>中国内地</td><td>遇假期顺延至下一工作日</td></tr>
+        <tr><td>EUR</td><td>欧盟 (TARGET2)</td><td>遇假期顺延至下一工作日</td></tr>
+        <tr><td>GBP</td><td>英国</td><td>遇假期顺延至下一工作日</td></tr>
+        <tr><td>JPY</td><td>日本</td><td>遇假期顺延至下一工作日</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</main>
+
+<script>
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', function() {
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    this.classList.add('active');
+    const pageId = 'page-' + this.dataset.page;
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const target = document.getElementById(pageId);
+    if (target) target.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
