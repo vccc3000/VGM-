@@ -148,6 +148,11 @@ tr:hover td { background: #f8fafc; }
       <div class="nav-item" data-page="fund-purchase"><span class="icon">🏧</span> 盈钱宝申购</div>
       <div class="nav-item" data-page="fund-transfer"><span class="icon">💸</span> 账户内转</div>
     </div>
+    <div class="nav-section"><div class="nav-section-title">风控中心</div>
+      <div class="nav-item" data-page="risk-dashboard"><span class="icon">📊</span> 风险概览 <span class="badge">1</span></div>
+      <div class="nav-item" data-page="margin-detail"><span class="icon">🔒</span> 保证金明细</div>
+      <div class="nav-item" data-page="risk-alerts"><span class="icon">🔔</span> 预警通知 <span class="badge">2</span></div>
+    </div>
     <div class="nav-section"><div class="nav-section-title">管理中心</div>
       <div class="nav-item" data-page="user-mgmt"><span class="icon">👥</span> 用户管理</div>
       <div class="nav-item" data-page="risk-assessment"><span class="icon">🛡️</span> 风险评估</div>
@@ -700,6 +705,94 @@ tr:hover td { background: #f8fafc; }
       <tr><td style="font-weight:600;width:200px">企业名称</td><td>ABC Corporation Ltd</td></tr>
       <tr><td style="font-weight:600">账户编号</td><td>C2024-00158</td></tr>
       <tr><td style="font-weight:600">风险等级</td><td><span class="tag tag-warning">进取型</span></td></tr>
+    </table>
+  </div>
+</div>
+
+
+<!-- ===== 风控中心 - 风险概览 ===== -->
+<div class="page" id="page-risk-dashboard">
+  <div class="page-header"><h2>风险概览</h2><p>个人风控面板 · 实时监控</p></div>
+  <div class="stats-grid">
+    <div class="stat-card" style="border-left:3px solid var(--success)"><div class="stat-label">保证金比率</div><div class="stat-value up">186%</div><div class="stat-change positive">安全 · 充足</div></div>
+    <div class="stat-card" style="border-left:3px solid var(--primary)"><div class="stat-label">VaR (99% 1D)</div><div class="stat-value">$ 48,200</div><div class="stat-change">限额 $200K · 使用率 24.1%</div></div>
+    <div class="stat-card" style="border-left:3px solid var(--warning)"><div class="stat-label">净敞口 (等值USD)</div><div class="stat-value">$ 2.15M</div><div class="stat-change">限额 $5M · 使用率 43%</div></div>
+    <div class="stat-card" style="border-left:3px solid var(--text-light)"><div class="stat-label">风险评分</div><div class="stat-value">22</div><div class="stat-change" style="color:var(--success)">正常范围 (0-30)</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header">保证金状态</div>
+    <table>
+      <tr><td style="font-weight:600;width:180px">权益净值</td><td>$ 3,850,000.00</td></tr>
+      <tr><td style="font-weight:600">现金余额</td><td>$ 2,350,000.00</td></tr>
+      <tr><td style="font-weight:600">浮动盈亏</td><td style="color:var(--success)">+$ 128,500.00</td></tr>
+      <tr><td style="font-weight:600">期权费估值</td><td>$ 1,371,500.00</td></tr>
+      <tr><td style="font-weight:600">已用保证金</td><td>$ 2,070,000.00</td></tr>
+      <tr><td style="font-weight:600;color:var(--success)">可用保证金</td><td style="color:var(--success);font-weight:600">$ 1,780,000.00</td></tr>
+      <tr><td style="font-weight:600">保证金比率</td><td><span class="tag tag-success">186% · 安全</span></td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-header">持仓风险明细</div>
+    <table>
+      <thead><tr><th>交易编号</th><th>货币对</th><th>类型</th><th>Delta敞口</th><th>Gamma</th><th>Vega</th><th>保证金占用</th><th>浮盈</th></tr></thead>
+      <tbody>
+        <tr><td>FX20260525001</td><td>USD/HKD</td><td>远期3M</td><td>+$1,000,000</td><td>—</td><td>—</td><td>$ 50,000</td><td style="color:var(--danger)">-$17,500</td></tr>
+        <tr><td>SW20260526002</td><td>EUR/USD</td><td>掉期</td><td>+€150,000</td><td>—</td><td>—</td><td>$ 45,000</td><td style="color:var(--danger)">-$30</td></tr>
+        <tr><td>OPT20260527001</td><td>USD/JPY</td><td>卖出Put</td><td>+$38,000</td><td>0.012</td><td>245</td><td>$ 12,000</td><td style="color:var(--success)">+$850</td></tr>
+        <tr><td>FX20260528001</td><td>USD/HKD</td><td>即期</td><td>+$500,000</td><td>—</td><td>—</td><td>$ 10,000</td><td>$0</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 风控中心 - 保证金明细 ===== -->
+<div class="page" id="page-margin-detail">
+  <div class="page-header"><h2>保证金明细</h2><p>逐笔持仓保证金计算</p></div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">总已用保证金</div><div class="stat-value">$ 2,070,000</div></div>
+    <div class="stat-card"><div class="stat-label">保证金比率</div><div class="stat-value up">186%</div></div>
+    <div class="stat-card"><div class="stat-label">距追保线</div><div class="stat-value up">+$1,164,500</div></div>
+    <div class="stat-card"><div class="stat-label">距强平线</div><div class="stat-value up">+$2,014,000</div></div>
+  </div>
+  <div class="alert" style="background:#f0fdfa;border:1px solid #5eead4;color:#134e4a">
+    ✅ 保证金状态正常 · 预警线 120% · 追保线 100% · 强平线 80%
+  </div>
+  <div class="card">
+    <div class="card-header">保证金计算明细</div>
+    <table>
+      <thead><tr><th>交易编号</th><th>产品</th><th>货币对</th><th>名义本金</th><th>保证金比率</th><th>期限加成</th><th>保证金金额</th><th>占比</th></tr></thead>
+      <tbody>
+        <tr><td>FX20260525001</td><td>远期3M</td><td>USD/HKD</td><td>$ 1,000,000</td><td>2%</td><td>+1.5%</td><td>$ 35,000</td><td>16.3%</td></tr>
+        <tr><td>FX20260522001</td><td>远期6M</td><td>USD/CNH</td><td>$ 800,000</td><td>5%</td><td>+3%</td><td>$ 64,000</td><td>29.8%</td></tr>
+        <tr><td>NDF20260510001</td><td>NDF 3M</td><td>USD/CNY</td><td>$ 500,000</td><td>5%</td><td>+1.5%×1.2</td><td>$ 39,000</td><td>18.1%</td></tr>
+        <tr><td>SW20260526002</td><td>掉期</td><td>EUR/USD</td><td>€ 150,000</td><td>3%+0.3</td><td>组合</td><td>$ 49,500</td><td>23.0%</td></tr>
+        <tr><td>OPT20260527001</td><td>期权</td><td>USD/JPY</td><td>$ 100,000</td><td>Delta+Vega</td><td>—</td><td>$ 27,500</td><td>12.8%</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 风控中心 - 预警通知 ===== -->
+<div class="page" id="page-risk-alerts">
+  <div class="page-header"><h2>预警通知</h2><p>风控预警与事件记录</p></div>
+  <div class="alert alert-warning">⚠️ 2 条未处理预警</div>
+  <div class="card">
+    <div class="card-header">当前预警事件</div>
+    <table>
+      <thead><tr><th>时间</th><th>级别</th><th>类型</th><th>内容</th><th>状态</th></tr></thead>
+      <tbody>
+        <tr><td>2026-05-28 14:32</td><td><span class="tag tag-warning">⚠️ 黄色</span></td><td>集中度</td><td>USD/HKD 持仓集中度达 46%，接近 50% 上限</td><td><span class="tag tag-warning">待处理</span></td></tr>
+        <tr><td>2026-05-28 11:15</td><td><span class="tag tag-info">🔵 蓝色</span></td><td>大额交易</td><td>NDF20260528001 USD/CNY $300K 超过历史90分位</td><td><span class="tag tag-warning">待处理</span></td></tr>
+        <tr><td>2026-05-27 16:00</td><td><span class="tag tag-info">🔵 蓝色</span></td><td>保证金</td><td>保证金比率降至 135%，进入观察区</td><td><span class="tag tag-success">已解除</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-header">限额使用概况</div>
+    <table>
+      <tr><td style="font-weight:600;width:200px">VaR 使用率</td><td>24.1% / 100%</td><td style="width:200px"><div style="background:#e2e8f0;border-radius:4px;height:8px"><div style="background:var(--success);width:24%;height:8px;border-radius:4px"></div></div></td><td><span class="tag tag-success">正常</span></td></tr>
+      <tr><td style="font-weight:600">净敞口使用率</td><td>43% / 100%</td><td><div style="background:#e2e8f0;border-radius:4px;height:8px"><div style="background:var(--primary);width:43%;height:8px;border-radius:4px"></div></div></td><td><span class="tag tag-success">正常</span></td></tr>
+      <tr><td style="font-weight:600">日累计交易限额</td><td>68% / 100%</td><td><div style="background:#e2e8f0;border-radius:4px;height:8px"><div style="background:var(--warning);width:68%;height:8px;border-radius:4px"></div></div></td><td><span class="tag tag-warning">关注</span></td></tr>
     </table>
   </div>
 </div>

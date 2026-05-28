@@ -134,6 +134,17 @@ tr:hover td { background: #f8fafc; }
       <div class="nav-item" data-page="admin-regulatory">📊 监管报表</div>
       <div class="nav-item" data-page="admin-auditlog">🔍 审计日志</div>
     </div>
+    <div class="nav-section"><div class="nav-section-title">RMS 风控管理</div>
+      <div class="nav-item" data-page="rms-dashboard">📊 实时风控面板</div>
+      <div class="nav-item" data-page="rms-margin">💰 保证金监控 <span class="badge">2</span></div>
+      <div class="nav-item" data-page="rms-exposure">📐 敞口管理</div>
+      <div class="nav-item" data-page="rms-limits">🚧 限额管理</div>
+      <div class="nav-item" data-page="rms-forceclose">⛔ 强制平仓</div>
+      <div class="nav-item" data-page="rms-anomaly">🔍 异常交易检测 <span class="badge info">3</span></div>
+      <div class="nav-item" data-page="rms-stress">💥 压力测试</div>
+      <div class="nav-item" data-page="rms-params">⚙️ 风控参数</div>
+      <div class="nav-item" data-page="rms-reports">📋 风控报表</div>
+    </div>
     <div class="nav-section"><div class="nav-section-title">财务管理</div>
       <div class="nav-item" data-page="admin-deposit">🏦 出入金管理</div>
       <div class="nav-item" data-page="admin-fees">💳 手续费管理</div>
@@ -721,6 +732,274 @@ tr:hover td { background: #f8fafc; }
         <tr><td>EUR</td><td>欧盟 (TARGET2)</td><td>遇假期顺延至下一工作日</td></tr>
         <tr><td>GBP</td><td>英国</td><td>遇假期顺延至下一工作日</td></tr>
         <tr><td>JPY</td><td>日本</td><td>遇假期顺延至下一工作日</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ====== RMS 风控管理 ====== -->
+
+<!-- RMS-1: 实时风控面板 -->
+<div class="page" id="page-rms-dashboard">
+  <div class="page-header"><div><h2>实时风控面板</h2><p>RMS · 全平台风险监控 · 实时刷新</p></div><span style="font-size:12px;color:var(--text-secondary)">刷新频率: 5秒</span></div>
+  <div class="stats-grid">
+    <div class="stat-card" style="border-left:3px solid var(--success)"><div class="stat-label">平台保证金比率</div><div class="stat-value up">162%</div><div class="stat-change">总额 $850M · 安全</div></div>
+    <div class="stat-card" style="border-left:3px solid var(--primary)"><div class="stat-label">VaR (99% 1D)</div><div class="stat-value">$ 4.28M</div><div class="stat-change">限额 $10M · 42.8%</div></div>
+    <div class="stat-card" style="border-left:3px solid var(--warning)"><div class="stat-label">净敞口总计</div><div class="stat-value">$ 15.2M</div><div class="stat-change">限额 $30M · 50.7%</div></div>
+    <div class="stat-card" style="border-left:3px solid var(--danger)"><div class="stat-label">⚠️ 活跃预警</div><div class="stat-value down">8</div><div class="stat-change" style="color:var(--danger)">红色 2 / 黄色 5 / 蓝色 1</div></div>
+  </div>
+  <div class="card-grid">
+    <div class="card"><div class="card-header">货币对敞口热力图</div>
+      <table>
+        <thead><tr><th>货币对</th><th>净敞口 (USD等值)</th><th>限额</th><th>使用率</th><th>状态</th></tr></thead>
+        <tbody>
+          <tr><td>USD/HKD</td><td>+$ 5.2M</td><td>$ 8M</td><td>65%</td><td><span class="tag tag-success">正常</span></td></tr>
+          <tr style="background:#fffbeb"><td>USD/CNH</td><td>-$ 4.8M</td><td>$ 6M</td><td>80%</td><td><span class="tag tag-warning">关注</span></td></tr>
+          <tr style="background:#fef2f2"><td>USD/THB</td><td>+$ 2.8M</td><td>$ 3M</td><td>93%</td><td><span class="tag tag-danger">告警</span></td></tr>
+          <tr><td>EUR/USD</td><td>+€ 1.5M</td><td>€ 3M</td><td>50%</td><td><span class="tag tag-success">正常</span></td></tr>
+          <tr><td>USD/JPY</td><td>-$ 1.2M</td><td>$ 4M</td><td>30%</td><td><span class="tag tag-success">正常</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card"><div class="card-header">实时预警事件流</div>
+      <div class="alert alert-danger">🔴 客户 Eastern Trade Co 保证金率降至 45% · 触发强平线</div>
+      <div class="alert alert-warning">🟡 USD/THB 净敞口 93% · 接近限额</div>
+      <div class="alert alert-warning">🟡 客户 GlobalTrade HK 保证金率 89% · 预警线</div>
+      <div class="alert alert-info">🔵 客户 ABC Corp USD/HKD 集中度 46% · 关注</div>
+      <div class="alert alert-info">🔵 LP "LiquidityX" 报价延迟 350ms · 关注</div>
+    </div>
+  </div>
+</div>
+
+<!-- RMS-2: 保证金监控 -->
+<div class="page" id="page-rms-margin">
+  <div class="page-header"><div><h2>保证金监控</h2><p>全平台客户保证金 · 预警 · 追保</p></div><div><button class="btn btn-outline btn-sm">批量追保</button> <button class="btn btn-primary btn-sm">导出</button></div></div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">总保证金</div><div class="stat-value">$ 850M</div></div>
+    <div class="stat-card"><div class="stat-label">已用保证金</div><div class="stat-value">$ 525M</div></div>
+    <div class="stat-card"><div class="stat-label">观察中客户</div><div class="stat-value" style="color:var(--primary)">12</div></div>
+    <div class="stat-card"><div class="stat-label">追保中客户</div><div class="stat-value" style="color:var(--warning)">2</div></div>
+    <div class="stat-card"><div class="stat-label">强平候选</div><div class="stat-value" style="color:var(--danger)">1</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header">客户保证金列表</div>
+    <table>
+      <thead><tr><th>客户</th><th>权益净值</th><th>已用保证金</th><th>可用保证金</th><th>保证金比率</th><th>等级</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr style="background:#fef2f2"><td>Eastern Trade Co</td><td>$ 1,500,000</td><td>$ 3,320,000</td><td>$ 0</td><td style="color:var(--danger);font-weight:700">45.2%</td><td><span class="tag tag-danger">强平</span></td><td><button class="btn btn-sm btn-danger">强制平仓</button> <button class="btn btn-sm btn-outline">明细</button></td></tr>
+        <tr style="background:#fffbeb"><td>GlobalTrade HK</td><td>$ 1,200,000</td><td>$ 1,350,000</td><td>$ 0</td><td style="color:var(--warning);font-weight:700">88.9%</td><td><span class="tag tag-warning">追保</span></td><td><button class="btn btn-sm btn-warning">追保通知</button> <button class="btn btn-sm btn-outline">明细</button></td></tr>
+        <tr><td>ABC Corporation</td><td>$ 4,000,000</td><td>$ 2,150,000</td><td>$ 1,850,000</td><td style="color:var(--success)">186%</td><td><span class="tag tag-success">正常</span></td><td><button class="btn btn-sm btn-outline">明细</button></td></tr>
+        <tr><td>TechFin Asia</td><td>$ 8,500,000</td><td>$ 2,800,000</td><td>$ 5,700,000</td><td style="color:var(--success)">303%</td><td><span class="tag tag-success">正常</span></td><td><button class="btn btn-sm btn-outline">明细</button></td></tr>
+        <tr style="background:#f0fdfa"><td>Sunrise Trading</td><td>$ 2,500,000</td><td>$ 1,900,000</td><td>$ 600,000</td><td style="color:var(--primary)">131%</td><td><span class="tag tag-primary">观察</span></td><td><button class="btn btn-sm btn-outline">明细</button> <button class="btn btn-sm btn-outline">通知</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-header">追保/强平日志</div>
+    <table>
+      <thead><tr><th>时间</th><th>客户</th><th>事件类型</th><th>保证金比率</th><th>缺口金额</th><th>处理人</th><th>状态</th></tr></thead>
+      <tbody>
+        <tr><td>2026-05-28 14:15</td><td>Eastern Trade Co</td><td>触发强平</td><td>45.2%</td><td>$ 1,820,000</td><td>系统自动</td><td><span class="tag tag-danger">执行中</span></td></tr>
+        <tr><td>2026-05-28 11:30</td><td>GlobalTrade HK</td><td>发送追保</td><td>88.9%</td><td>$ 150,000</td><td>风控-陈明</td><td><span class="tag tag-warning">等待补缴</span></td></tr>
+        <tr><td>2026-05-27 16:20</td><td>ABC Corp</td><td>追保解除</td><td>135%→186%</td><td>—</td><td>自动</td><td><span class="tag tag-success">已解除</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- RMS-3: 敞口管理 -->
+<div class="page" id="page-rms-exposure">
+  <div class="page-header"><div><h2>敞口管理</h2><p>净敞口矩阵 · 对冲建议</p></div><button class="btn btn-primary">生成对冲方案</button></div>
+  <div class="card">
+    <div class="card-header">净敞口矩阵 (按货币对×客户)</div>
+    <table>
+      <thead><tr><th style="width:80px">货币对</th><th style="width:100px">ABC Corp</th><th style="width:100px">TechFin</th><th style="width:100px">GlobalTrade</th><th style="width:100px">Eastern Tr.</th><th style="width:100px">平台净额</th><th style="width:80px">限额</th><th style="width:60px">%</th></tr></thead>
+      <tbody>
+        <tr><td>USD/HKD</td><td style="color:var(--success)">+$5.2M</td><td style="color:var(--danger)">-$3.1M</td><td style="color:var(--success)">+$1.8M</td><td style="color:var(--danger)">-$0.8M</td><td style="font-weight:700">+$3.1M</td><td>$8M</td><td>38.8%</td></tr>
+        <tr><td>USD/CNH</td><td style="color:var(--danger)">-$2.5M</td><td style="color:var(--danger)">-$1.8M</td><td style="color:var(--success)">+$0.5M</td><td style="color:var(--danger)">-$1.0M</td><td style="font-weight:700;color:var(--danger)">-$4.8M</td><td>$6M</td><td style="color:var(--warning)">80%</td></tr>
+        <tr><td>USD/JPY</td><td style="color:var(--success)">+$1.8M</td><td style="color:var(--danger)">-$2.5M</td><td style="color:var(--danger)">-$0.5M</td><td>—</td><td style="font-weight:700;color:var(--danger)">-$1.2M</td><td>$4M</td><td>30%</td></tr>
+        <tr><td>EUR/USD</td><td style="color:var(--danger)">-€2.1M</td><td style="color:var(--success)">+€3.2M</td><td style="color:var(--success)">+€0.4M</td><td>—</td><td style="font-weight:700;color:var(--success)">+€1.5M</td><td>€3M</td><td>50%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-header">对冲建议</div>
+    <div class="alert alert-info">基于当前净敞口 -$4.8M USD/CNH (使用率 80%)，建议对外买入 $2M USD/CNH 远期以降低敞口至 47%</div>
+    <table>
+      <thead><tr><th>建议编号</th><th>货币对</th><th>方向</th><th>建议金额</th><th>产品</th><th>预期效果</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr><td>HEDGE001</td><td>USD/CNH</td><td>买入 USD</td><td>$ 2,000,000</td><td>远期1M</td><td>敞口降至 47%</td><td><button class="btn btn-sm btn-primary">执行</button> <button class="btn btn-sm btn-outline">忽略</button></td></tr>
+        <tr><td>HEDGE002</td><td>USD/THB</td><td>卖出 USD</td><td>$ 800,000</td><td>即期</td><td>敞口降至 67%</td><td><button class="btn btn-sm btn-primary">执行</button> <button class="btn btn-sm btn-outline">忽略</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- RMS-4: 限额管理 -->
+<div class="page" id="page-rms-limits">
+  <div class="page-header"><div><h2>限额管理</h2><p>多维度限额配置</p></div><button class="btn btn-primary">+ 新增限额规则</button></div>
+  <div class="tab-nav">
+    <div class="tab active">客户限额</div><div class="tab">货币对限额</div><div class="tab">Greeks限额</div><div class="tab">VaR限额</div><div class="tab">审批记录</div>
+  </div>
+  <div class="card">
+    <table>
+      <thead><tr><th>客户</th><th>单笔限额</th><th>日累计限额</th><th>总敞口限额</th><th>保证金上限</th><th>产品限制</th><th>状态</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr><td>ABC Corporation</td><td>$ 5M</td><td>$ 15M</td><td>$ 10M</td><td>$ 5M</td><td>即远/NDF/掉期/挂单</td><td><span class="tag tag-success">生效</span></td><td><button class="btn btn-sm btn-outline">调整</button></td></tr>
+        <tr><td>TechFin Asia</td><td>$ 10M</td><td>$ 30M</td><td>$ 20M</td><td>$ 10M</td><td>全部</td><td><span class="tag tag-success">生效</span></td><td><button class="btn btn-sm btn-outline">调整</button></td></tr>
+        <tr><td>GlobalTrade HK</td><td>$ 2M</td><td>$ 5M</td><td>$ 3M</td><td>$ 1.5M</td><td>即远/NDF</td><td><span class="tag tag-warning">临时调整</span></td><td><button class="btn btn-sm btn-outline">调整</button></td></tr>
+        <tr><td>Eastern Trade Co</td><td>$ 1M</td><td>$ 3M</td><td>$ 2M</td><td>$ 1M</td><td>即期</td><td><span class="tag tag-danger">已超限</span></td><td><button class="btn btn-sm btn-warning">紧急调整</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-header">限额使用率监控</div>
+    <table>
+      <tr><td style="font-weight:600;width:200px">全局 VaR 限额</td><td>$ 4.28M / $ 10M</td><td style="width:200px"><div style="background:#e2e8f0;border-radius:4px;height:8px"><div style="background:var(--success);width:42.8%;height:8px;border-radius:4px"></div></div></td><td>42.8%</td></tr>
+      <tr><td style="font-weight:600">USD/CNH 敞口限额</td><td>$ 4.8M / $ 6M</td><td><div style="background:#e2e8f0;border-radius:4px;height:8px"><div style="background:var(--warning);width:80%;height:8px;border-radius:4px"></div></div></td><td style="color:var(--warning)">80%</td></tr>
+      <tr><td style="font-weight:600">净 Delta 限额</td><td>$ 12.5M / $ 20M</td><td><div style="background:#e2e8f0;border-radius:4px;height:8px"><div style="background:var(--primary);width:62.5%;height:8px;border-radius:4px"></div></div></td><td>62.5%</td></tr>
+      <tr><td style="font-weight:600">净 Vega 限额</td><td>$ 185K / $ 500K</td><td><div style="background:#e2e8f0;border-radius:4px;height:8px"><div style="background:var(--primary);width:37%;height:8px;border-radius:4px"></div></div></td><td>37%</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- RMS-5: 强制平仓 -->
+<div class="page" id="page-rms-forceclose">
+  <div class="page-header"><div><h2>强制平仓管理</h2><p>强平触发 · 执行 · 审计</p></div></div>
+  <div class="alert alert-danger">⚠️ 当前 1 个客户触发强平条件：Eastern Trade Co (保证金 45.2%)</div>
+  <div class="card">
+    <div class="card-header">强平候选列表</div>
+    <table>
+      <thead><tr><th>客户</th><th>保证金比率</th><th>触发时间</th><th>涉及持仓</th><th>预估平仓额</th><th>强平顺序</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr style="background:#fef2f2"><td>Eastern Trade Co</td><td style="color:var(--danger);font-weight:700">45.2%</td><td>2026-05-28 14:15</td><td>3笔</td><td>$ 1,820,000</td><td style="font-weight:600">#1</td><td><button class="btn btn-sm btn-danger">一键强平</button> <button class="btn btn-sm btn-outline">查看方案</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-header">推荐强平方案 — Eastern Trade Co</div>
+    <table>
+      <thead><tr><th>顺序</th><th>交易编号</th><th>货币对</th><th>类型</th><th>名义本金</th><th>浮动亏损</th><th>保证金释放</th><th>流动性</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>FX20260525005</td><td>USD/CNH</td><td>远期3M</td><td>$ 800,000</td><td style="color:var(--danger)">-$ 95,000</td><td>$ 64,000</td><td>高</td><td><button class="btn btn-sm btn-danger">平仓</button> <button class="btn btn-sm btn-outline">跳过</button></td></tr>
+        <tr><td>2</td><td>NDF20260515002</td><td>USD/CNY</td><td>NDF 1M</td><td>$ 500,000</td><td style="color:var(--danger)">-$ 42,000</td><td>$ 39,000</td><td>中</td><td><button class="btn btn-sm btn-danger">平仓</button> <button class="btn btn-sm btn-outline">跳过</button></td></tr>
+        <tr><td>3</td><td>FX20260528006</td><td>USD/HKD</td><td>即期</td><td>$ 200,000</td><td style="color:var(--danger)">-$ 3,500</td><td>$ 4,000</td><td>高</td><td><button class="btn btn-sm btn-danger">平仓</button> <button class="btn btn-sm btn-outline">跳过</button></td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:8px;font-size:13px;color:var(--text-secondary)">排序依据: 亏损金额↓ → 保证金释放↓ → 流动性</div>
+    <div class="btn-group"><button class="btn btn-danger btn-lg">⚡ 按顺序全部平仓</button></div>
+  </div>
+</div>
+
+<!-- RMS-6: 异常交易检测 -->
+<div class="page" id="page-rms-anomaly">
+  <div class="page-header"><div><h2>异常交易检测</h2><p>实时检测 · 规则引擎 · 风险评分</p></div><button class="btn btn-outline btn-sm">规则配置</button></div>
+  <div class="stats-grid">
+    <div class="stat-card" style="border-left:3px solid var(--danger)"><div class="stat-label">今日异常事件</div><div class="stat-value down">3</div><div class="stat-change">红色 1 / 黄色 2</div></div>
+    <div class="stat-card"><div class="stat-label">本月累计</div><div class="stat-value">28</div><div class="stat-change">误报率 12.5%</div></div>
+    <div class="stat-card"><div class="stat-label">冻结账户</div><div class="stat-value" style="color:var(--warning)">1</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header">异常事件列表</div>
+    <table>
+      <thead><tr><th>时间</th><th>客户</th><th>检测类型</th><th>详情</th><th>评分</th><th>级别</th><th>自动响应</th><th>处理</th></tr></thead>
+      <tbody>
+        <tr style="background:#fef2f2"><td>14:32:15</td><td>Delta Industries</td><td>反洗钱</td><td>快进快出: $500K USD/HKD 入金30分钟后全额交易</td><td style="font-weight:700;color:var(--danger)">85</td><td><span class="tag tag-danger">红色</span></td><td>已冻结账户</td><td><button class="btn btn-sm btn-outline">调查</button> <button class="btn btn-sm btn-success">误报</button></td></tr>
+        <tr style="background:#fffbeb"><td>13:15:08</td><td>Pacific Imports</td><td>高频交易</td><td>30秒内 8笔挂单操作 (超出历史均值 6×)</td><td style="font-weight:700;color:var(--warning)">55</td><td><span class="tag tag-warning">黄色</span></td><td>限制新开仓</td><td><button class="btn btn-sm btn-outline">审核</button> <button class="btn btn-sm btn-success">误报</button></td></tr>
+        <tr style="background:#fffbeb"><td>11:45:22</td><td>Eastern Trade</td><td>大额异常</td><td>单笔 $1.5M USD/CNH (历史90分位 $500K)</td><td style="font-weight:700;color:var(--warning)">60</td><td><span class="tag tag-warning">黄色</span></td><td>需复核确认</td><td><button class="btn btn-sm btn-outline">审核</button> <button class="btn btn-sm btn-success">误报</button></td></tr>
+        <tr><td>10:08:33</td><td>GlobalTrade HK</td><td>延迟套利</td><td>成交价偏离LP报价 15pips</td><td>35</td><td><span class="tag tag-info">蓝色</span></td><td>标记记录</td><td><button class="btn btn-sm btn-outline">审核</button> <button class="btn btn-sm btn-success">误报</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-header">客户风险画像 — Delta Industries</div>
+    <div class="form-row-4">
+      <div class="stat-card"><div class="stat-label">综合风险评分</div><div class="stat-value down">85</div><div class="stat-change">本月最高</div></div>
+      <div class="stat-card"><div class="stat-label">异常事件数</div><div class="stat-value">12</div><div class="stat-change">本月</div></div>
+      <div class="stat-card"><div class="stat-label">AML命中</div><div class="stat-value" style="color:var(--danger)">3</div><div class="stat-change">需调查</div></div>
+      <div class="stat-card"><div class="stat-label">账户状态</div><div class="stat-value" style="color:var(--danger)">已冻结</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- RMS-7: 压力测试 -->
+<div class="page" id="page-rms-stress">
+  <div class="page-header"><div><h2>压力测试</h2><p>历史情景 · 假设情景 · 影响评估</p></div><button class="btn btn-primary">执行压力测试</button></div>
+  <div class="card">
+    <div class="card-header">选择测试情景</div>
+    <div class="form-row-3">
+      <div class="form-group"><label>历史情景</label><select><option value="all">全部执行</option><option>S1-瑞郎黑天鹅 2015 (-30%)</option><option>S2-英国脱欧 2016 (-10%)</option><option>S3-中美贸易战 2019 (+2.5%)</option><option>S4-COVID恐慌 2020 (vol×4)</option><option>S5-美联储激进加息 2022 (+5%/-8%)</option></select></div>
+      <div class="form-group"><label>假设情景</label><select><option value="all">全部执行</option><option>H1-USD全面走强 (+10%)</option><option>H3-波动率飙升 (vol×2.5)</option><option>H7-组合极端 (H1+H3叠加)</option></select></div>
+      <div class="form-group"><label>置信水平</label><select><option>99%</option><option>95%</option></select></div>
+    </div>
+    <button class="btn btn-primary btn-lg" style="margin-top:8px">▶ 执行压力测试</button>
+  </div>
+  <div class="card">
+    <div class="card-header">上次测试结果 (2026-05-28 08:00)</div>
+    <table>
+      <thead><tr><th>情景</th><th>总损益</th><th>保证金缺口</th><th>穿仓客户</th><th>VaR突破</th><th>最差货币对</th><th>风险等级</th></tr></thead>
+      <tbody>
+        <tr style="background:#fef2f2"><td>S1 瑞郎黑天鹅</td><td style="color:var(--danger)">-$ 8.2M</td><td style="color:var(--danger)">$ 2.5M</td><td style="color:var(--danger)">3</td><td>✅ 突破</td><td>EUR/CHF</td><td><span class="tag tag-danger">高风险</span></td></tr>
+        <tr style="background:#fffbeb"><td>S4 COVID恐慌</td><td style="color:var(--danger)">-$ 5.8M</td><td style="color:var(--danger)">$ 0.8M</td><td style="color:var(--warning)">1</td><td>✅ 突破</td><td>USD/MXN</td><td><span class="tag tag-warning">中风险</span></td></tr>
+        <tr><td>H7 组合极端</td><td style="color:var(--danger)">-$ 6.5M</td><td style="color:var(--danger)">$ 1.2M</td><td style="color:var(--warning)">2</td><td>✅ 突破</td><td>USD/CNH</td><td><span class="tag tag-warning">中风险</span></td></tr>
+        <tr><td>S3 中美贸易战</td><td style="color:var(--danger)">-$ 3.1M</td><td>$ 0</td><td>0</td><td>❌ 未突破</td><td>USD/CNH</td><td><span class="tag tag-success">低风险</span></td></tr>
+        <tr><td>H1 USD走强</td><td style="color:var(--success)">+$ 1.2M</td><td>$ 0</td><td>0</td><td>❌ 未突破</td><td>USD/HKD</td><td><span class="tag tag-success">低风险</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- RMS-8: 风控参数配置 -->
+<div class="page" id="page-rms-params">
+  <div class="page-header"><div><h2>风控参数配置</h2><p>全局风控参数 · 模型参数 · 预警阈值</p></div><button class="btn btn-primary">保存配置</button></div>
+  <div class="tab-nav">
+    <div class="tab active">保证金参数</div><div class="tab">VaR参数</div><div class="tab">预警阈值</div><div class="tab">强平参数</div><div class="tab">异常检测</div>
+  </div>
+  <div class="card">
+    <div class="card-header">保证金比率配置（按货币对）</div>
+    <table>
+      <thead><tr><th>货币对类别</th><th>即期</th><th>远期(每月加成)</th><th>NDF因子</th><th>期权 Delta保证金</th><th>期权 Vega保证金</th></tr></thead>
+      <tbody>
+        <tr><td>G7主要货币对 (EUR/USD, USD/JPY...)</td><td><input type="number" value="3" style="width:60px">%</td><td><input type="number" value="0.5" style="width:60px">%</td><td>—</td><td><input type="number" value="3" style="width:60px">%</td><td><input type="number" value="0.01" style="width:60px">×</td></tr>
+        <tr><td>港币联系汇率 (USD/HKD)</td><td><input type="number" value="2" style="width:60px">%</td><td><input type="number" value="0.5" style="width:60px">%</td><td>—</td><td><input type="number" value="2" style="width:60px">%</td><td><input type="number" value="0.01" style="width:60px">×</td></tr>
+        <tr><td>离岸人民币 (USD/CNH)</td><td><input type="number" value="5" style="width:60px">%</td><td><input type="number" value="0.5" style="width:60px">%</td><td>1.2×</td><td><input type="number" value="5" style="width:60px">%</td><td><input type="number" value="0.015" style="width:60px">×</td></tr>
+        <tr><td>新兴市场货币 (USD/KRW, USD/INR...)</td><td><input type="number" value="8" style="width:60px">%</td><td><input type="number" value="0.8" style="width:60px">%</td><td>1.5×</td><td><input type="number" value="8" style="width:60px">%</td><td><input type="number" value="0.02" style="width:60px">×</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-header">预警阈值配置</div>
+    <div class="form-row-4">
+      <div class="form-group"><label>观察线</label><input type="number" value="150">%</div>
+      <div class="form-group"><label>预警线</label><input type="number" value="120">%</div>
+      <div class="form-group"><label>追保线</label><input type="number" value="100">%</div>
+      <div class="form-group"><label>强平线</label><input type="number" value="80">%</div>
+    </div>
+    <div class="form-row-4" style="margin-top:12px">
+      <div class="form-group"><label>VaR置信水平</label><input type="number" value="99">%</div>
+      <div class="form-group"><label>VaR历史窗口</label><input type="number" value="250">天</div>
+      <div class="form-group"><label>衰减因子 λ</label><input type="number" value="0.94" step="0.01"></div>
+      <div class="form-group"><label>SPAN波动率扫描</label><input type="number" value="25">%</div>
+    </div>
+  </div>
+</div>
+
+<!-- RMS-9: 风控报表 -->
+<div class="page" id="page-rms-reports">
+  <div class="page-header"><div><h2>风控报表</h2><p>日报 · 周报 · 月报 · 监管报送</p></div><button class="btn btn-primary">生成报表</button></div>
+  <div class="card">
+    <div class="card-header">报表列表</div>
+    <table>
+      <thead><tr><th>报表名称</th><th>类型</th><th>频率</th><th>最近生成</th><th>状态</th><th>操作</th></tr></thead>
+      <tbody>
+        <tr><td>日风控简报 2026-05-28</td><td>日报</td><td>每日 18:00</td><td>—</td><td><span class="tag tag-default">待生成</span></td><td><button class="btn btn-sm btn-primary">生成</button> <button class="btn btn-sm btn-outline">预览</button></td></tr>
+        <tr><td>日风控简报 2026-05-27</td><td>日报</td><td>每日 18:00</td><td>2026-05-27 18:00</td><td><span class="tag tag-success">已生成</span></td><td><button class="btn btn-sm btn-outline">下载</button> <button class="btn btn-sm btn-outline">查看</button></td></tr>
+        <tr><td>周风控报告 W22</td><td>周报</td><td>每周五 17:00</td><td>2026-05-23 17:00</td><td><span class="tag tag-success">已生成</span></td><td><button class="btn btn-sm btn-outline">下载</button> <button class="btn btn-sm btn-outline">查看</button></td></tr>
+        <tr><td>月风控报告 2026-05</td><td>月报</td><td>每月末</td><td>—</td><td><span class="tag tag-default">待生成</span></td><td><button class="btn btn-sm btn-outline">生成</button></td></tr>
+        <tr><td>VaR回测报告 2026-05</td><td>月报</td><td>每月末</td><td>—</td><td><span class="tag tag-default">待生成</span></td><td><button class="btn btn-sm btn-outline">生成</button></td></tr>
+        <tr><td>压力测试报告 W22</td><td>周报</td><td>每周一 08:00</td><td>2026-05-26 08:00</td><td><span class="tag tag-success">已生成</span></td><td><button class="btn btn-sm btn-outline">下载</button> <button class="btn btn-sm btn-outline">查看</button></td></tr>
+        <tr><td>HKMA 监管报送 Q1</td><td>监管</td><td>每季度</td><td>2026-04-01</td><td><span class="tag tag-success">已报送</span></td><td><button class="btn btn-sm btn-outline">下载</button></td></tr>
+        <tr><td>重大事件复盘 #003</td><td>按需</td><td>按需</td><td>2026-05-15</td><td><span class="tag tag-success">已生成</span></td><td><button class="btn btn-sm btn-outline">查看</button></td></tr>
       </tbody>
     </table>
   </div>
